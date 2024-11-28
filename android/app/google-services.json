@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "404071758441",
+    "project_id": "xbridge-live",
+    "storage_bucket": "xbridge-live.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404071758441:android:80b12fa992a98d926c80f8",
+        "android_client_info": {
+          "package_name": "com.tig.xbridge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEAJpoWVgF09TPJxq8N0HANFxARkR4Qs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404071758441:android:4ba715b0d3e345ca6c80f8",
+        "android_client_info": {
+          "package_name": "com.tig.xbridgelive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEAJpoWVgF09TPJxq8N0HANFxARkR4Qs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

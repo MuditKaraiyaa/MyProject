@@ -1,0 +1,350 @@
+class AppRouter {
+  static final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final router = GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    redirect: (context, state) {
+      if (userName == "") {
+        return '/${RouteConstants.signInRoute}';
+      }
+
+      return null;
+    },
+
+
+    routes: [
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) {
+          return Material(child: child);
+        },
+        routes: [
+            GoRoute(
+            path: '/${RouteConstants.fieldEngineerSettings}',
+         //   parentNavigatorKey: _rootNavigatorKey,
+            name: RouteConstants.fieldEngineerSettings,
+            pageBuilder: (context, state) {
+              Widget page = BlocProvider(
+                create: (_) =>
+                    SettingsBlock(repository: SettingsRepositoryImpl()),
+                child: AppScaffold(
+                  title: 'Settings',
+                  isPopUp: false,
+                  shouldShowAppBar: true,
+                  shouldShowBackIcon: true,
+                  child: const SettingsListing(),
+
+                  // child: const ServiceCall(),
+                ),
+              );
+              return addSlideAnimation(page, state, context);
+            },
+          ),
+          GoRoute(
+            path: '/${RouteConstants.dashboard}',
+            // parentNavigatorKey: _rootNavigatorKey,
+            name: RouteConstants.dashboard,
+            builder: (context, state) {
+              return const Dashboard();
+            },
+          ),
+          GoRoute(
+            path: '/${RouteConstants.myTeam}',
+         //   parentNavigatorKey: _rootNavigatorKey,
+            name: RouteConstants.myTeam,
+            pageBuilder: (context, state) {
+              Widget page = BlocProvider(
+                create: (_) => MyTeamBlock(
+                  repository: MyTeamRepositoryImpl(
+                    provider: GetIt.I.get<APIProvider>(),
+                  ),
+                )..add(
+                    const MyTeamFetchDataEvent(),
+                  ),
+                child: AppScaffold(
+                  title: 'My Team',
+                  isPopUp: false,
+                  shouldShowAppBar: true,
+                  shouldShowBackIcon: true,
+                  child: const MyTeamListing(),
+
+                  // child: const ServiceCall(),
+                ),
+              );
+              return addSlideAnimation(page, state, context);
+            },
+          ),
+        ],
+      ),
+
+
+      GoRoute(
+        path: '/${RouteConstants.signInRoute}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.signInRoute,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) => SignInBloc(
+              repository: SignInRepositoryImpl(
+                provider: GetIt.I.get<APIProvider>(),
+                prefHelper: GetIt.I.get<SharedPrefHelper>(),
+              ),
+            ),
+            child: AppScaffold(
+              title: 'Sign In',
+              isPopUp: true,
+              shouldShowAppBar: false,
+              shouldShowBackIcon: false,
+              child: const SignIn(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+
+      // StatefulShellRoute.indexedStack(
+      //   builder: (context, shell ,navigationShell)=>
+      //   branches: [],),
+      // GoRoute(
+      //   path: '/${RouteConstants.dashboard}',
+      //   parentNavigatorKey: _rootNavigatorKey,
+      //   name: RouteConstants.dashboard,
+      //   builder: (context, state) {
+      //     return const Dashboard();
+      //   },
+      // ),
+      // GoRoute(
+      //   path: '/${RouteConstants.myTeam}',
+      //   parentNavigatorKey: _rootNavigatorKey,
+      //   name: RouteConstants.myTeam,
+      //   pageBuilder: (context, state) {
+      //     Widget page = BlocProvider(
+      //       create: (_) => MyTeamBlock(
+      //         repository: MyTeamRepositoryImpl(
+      //           provider: GetIt.I.get<APIProvider>(),
+      //         ),
+      //       )..add(
+      //           const MyTeamFetchDataEvent(),
+      //         ),
+      //       child: AppScaffold(
+      //         title: 'My Team',
+      //         isPopUp: false,
+      //         shouldShowAppBar: true,
+      //         shouldShowBackIcon: true,
+      //         child: const MyTeamListing(),
+
+      //         // child: const ServiceCall(),
+      //       ),
+      //     );
+      //     return addSlideAnimation(page, state, context);
+      //   },
+      // ),
+
+      GoRoute(
+        path: '/${RouteConstants.fieldEngineer}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.fieldEngineer,
+        pageBuilder: (context, state) {
+          // String id = state.queryParams['id'] ?? '';
+          String id = '1e23569dc325b15032d8339f0501316e';
+          Widget page = MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) => FieldEngineerBloc(
+                  repository: FieldEngineerRepositoryImpl(
+                    provider: GetIt.I.get<APIProvider>(),
+                  ),
+                )..add(LoadFieldEngineerEvent(id: id)),
+              ),
+              BlocProvider(
+                create: (_) => UnassignedTaskBloc(
+                  repository: UnassignedTasksRepositoryImpl(
+                    provider: GetIt.I.get<APIProvider>(),
+                  ),
+                )..add(LoadFieldEngineerTaskByIDEvent(id: newTaskStatus)),
+              ),
+            ],
+            child: AppScaffold(
+              title: 'Task-Field Engineer',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: const FieldEngineer(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+      GoRoute(
+        path: '/${RouteConstants.calendarTaskViewList}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.calendarTaskViewList,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) => FieldEngineerTaskListBlock(
+              repository: FieldEngineerTaskListImpl(
+                provider: GetIt.I.get<APIProvider>(),
+              ),
+            )..add(LoadFieldEngineerTaskListEvent()),
+            child: AppScaffold(
+              title: 'Calendar',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: const CalendarTaskView(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+
+      GoRoute(
+        path: '/${RouteConstants.unassignVisit}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.unassignVisit,
+        builder: (context, state) {
+          return BlocProvider(
+            create: (_) => UnassignedTaskBloc(
+              repository: UnassignedTasksRepositoryImpl(
+                provider: GetIt.I.get<APIProvider>(),
+              ),
+            )..add(LoadUnassignedTaskEvent()),
+            child: const UnAssignedVisits(),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/${RouteConstants.taskDetails}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.taskDetails,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) => TaskDetailsBloc(
+              repository: TaskDetailsRepositoryImpl(
+                provider: GetIt.I.get<APIProvider>(),
+              ),
+            )..add(
+                TaskDetailsFetchDataEvent(
+                    id: state.uri.queryParameters['id'] ?? '',),
+              ),
+            child: AppScaffold(
+              title: 'Task Details',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: TaskDetails(
+                id: state.uri.queryParameters['id'] ?? '',
+              ),
+              //for alert Dialog widget update, we have to provide stateFulBuilder.
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+
+        // pageBuilder: (context, state) {
+        //   //return const FieldEngineer();
+        //   Widget page = AppScaffold(
+        //     title: 'Task Details ',
+        //     isPopUp: false,
+        //     shouldShowAppBar: true,
+        //     shouldShowBackIcon: true,
+        //     child: const TaskDetails(),
+        //   );
+        //   return addSlideAnimation(page, state, context);
+        // },
+        // builder: (context, state) {
+        //   return const TaskDetails();
+        // },
+      ),
+      GoRoute(
+        path: '/${RouteConstants.fieldEngineerLocationUpdate}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.fieldEngineerLocationUpdate,
+        builder: (context, state) {
+          return const GeolocatorWidget();
+        },
+      ),
+
+      GoRoute(
+        path: '/${RouteConstants.fieldEngineerTask}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.fieldEngineerTask,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) => FieldEngineerTaskListBlock(
+              repository: FieldEngineerTaskListImpl(
+                provider: GetIt.I.get<APIProvider>(),
+              ),
+            )..add(LoadFieldEngineerTaskListByIDEvent(id: newTaskStatus)),
+            child: AppScaffold(
+              title: 'Visits',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: const FieldEngineerTaskList(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+      GoRoute(
+        path: '/${RouteConstants.fieldEngineerWorkNote}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.fieldEngineerWorkNote,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) => WorkNotesBlock(repository: WorkNoteImpl()),
+            child: AppScaffold(
+              title: 'Work Notes',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: const FEWorkNotes(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+      GoRoute(
+        path: '/${RouteConstants.serviceCallReport}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.serviceCallReport,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) =>
+                ServiceCallReportBlock(repository: ServiceCallReportImpl()),
+            child: AppScaffold(
+              title: 'Service Call Report',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: const ServiceCall(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+      GoRoute(
+        path: '/${RouteConstants.fieldEngineerLogList}',
+        parentNavigatorKey: _rootNavigatorKey,
+        name: RouteConstants.fieldEngineerLogList,
+        pageBuilder: (context, state) {
+          Widget page = BlocProvider(
+            create: (_) => LogListBlock(repository: LogListRepositoryImpl()),
+            child: AppScaffold(
+              title: 'Logs',
+              isPopUp: false,
+              shouldShowAppBar: true,
+              shouldShowBackIcon: true,
+              child: const LogList(),
+            ),
+          );
+          return addSlideAnimation(page, state, context);
+        },
+      ),
+    ],
+  );
+}
+
+
